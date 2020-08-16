@@ -3,6 +3,7 @@ INSTALL_FOLDER="/usr/local"
 TARGET_VERSION=${1}
 #FILES=$(ls -l $INSTALL_FOLDER | grep cuda)
 #echo $FILES
+echo "Usage : swcuda <Cuda Version>"
 if [[ -z ${TARGET_VERSION} ]]; then
  ls -l "${INSTALL_FOLDER}" | egrep -o "cuda-[0-9]+\\.[0-9]+$" | while read -r line; do
   echo "* ${line}"
