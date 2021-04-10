@@ -1,0 +1,68 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          test
+# Required-Start:    $local_fs $named 
+# Required-Stop:     $local_fs $network $named $time $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Description:       testing 
+### END INIT INFO
+
+#USER=root
+NAME="Kaldi"
+APP_ROOT="/home/$USER/kaldi-gstreamer-server"
+PIDFILE=/var/run/$NAME.pid
+START_CMD="nohup python2 -m SimpleHTTPServer &"
+
+do_start() {
+  if [ -f "$PIDFILE" ];then
+       echo "${NAME} Service already running" >&2
+       return 1
+    fi
+    echo "Starting $NAME" >&2
+    su - $USER -c  "$START_CMD" || echo -n "SimpleHTTPServer already running"
+    sleep 2
+    ps -ef | awk '/python2/{print $2}'| sed -n '2p' > $PIDFILE
+    echo "$NAME Service started with process $(ps -ef | awk '/python2/{print $2}')"
+}
+
+do_stop() {
+  if [ ! -f "$PIDFILE" ]; then
+       echo "${NAME} Service not running" >&2
+       return 1
+    fi
+    su - $USER -c "kill -9 $(ps -ef | awk '/python2/{print $2}')" || echo -n "SimpleHTTPServer already running"
+    su - $USER -c "rm -rf $PIDFILE" 
+    echo "$NAME Service STOPPED."
+}
+
+
+do_status() {
+  if [ -f "$PIDFILE" ];then
+    echo "$NAME Service (process $(ps -ef | awk '/python2/{print $2}')) is running..."
+  else
+    echo "$NAME Service is stopped"
+  fi
+}
+
+case "$1" in
+  start)
+    do_start
+    ;;
+  stop)
+    do_stop
+    ;;
+  restart)
+    do_restart
+    ;;
+  status)
+    do_status
+    ;;
+  reload)
+    do_reload
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|reload|status}"
+    ;;
+esac
+
