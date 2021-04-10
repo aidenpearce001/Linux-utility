@@ -9,8 +9,7 @@
 ### END INIT INFO
 
 #USER=root
-NAME="Kaldi"
-APP_ROOT="/home/$USER/kaldi-gstreamer-server"
+NAME="SimpleHTTPServer"
 PIDFILE=/var/run/$NAME.pid
 START_CMD="nohup python2 -m SimpleHTTPServer &"
 
